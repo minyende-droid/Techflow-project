@@ -69,24 +69,24 @@ jobs:
         if: success()
         uses: dawidd6/action-send-mail@v3
         with:
-        server_address: smtp.gmail.com
-        server_port: 587
-        username: ${{ secrets.EMAIL_USERNAME }}
-        password: ${{ secrets.EMAIL_PASSWORD }}
-        subject: "✅ Deployment Successful"
-        body: "Your Flask app was deployed successfully!"
-        to: ${{ secrets.EMAIL_TO }}
-        from: GitHub Actions
+          server_address: smtp.gmail.com
+          server_port: 587
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          subject: "✅ Deployment Successful"
+          body: "Your Flask app was deployed successfully!"
+          to: ${{ secrets.EMAIL_TO }}
+          from: GitHub Actions
 
       - name: Send failure email
         if: failure()
         uses: dawidd6/action-send-mail@v3
         with:
-        server_address: smtp.gmail.com
-        server_port: 587
-        username: ${{ secrets.EMAIL_USERNAME }}
-        password: ${{ secrets.EMAIL_PASSWORD }}
-        subject: "❌ Deployment Failed"
-        body: "Your deployment failed. Check GitHub Actions logs."
-        to: ${{ secrets.EMAIL_TO }}
-        from: GitHub Actions
+          server_address: smtp.gmail.com
+          server_port: 587
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          subject: "❌ Deployment Failed"
+          body: "Your deployment failed. Check GitHub Actions logs."
+          to: ${{ secrets.EMAIL_TO }}
+          from: GitHub Actions
