@@ -56,14 +56,22 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_KEY }}
           script: |
+            set -e   # 👈 VERY IMPORTANT (stop on error)
+
             echo "Running on EC2..."
             whoami
+            pwd
+
+            echo "Docker version:"
+            sudo docker --version
 
             echo "Logging into Docker..."
             sudo docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
 
             echo "Pulling image..."
             sudo docker pull minyende/flask-app:latest
+
+            echo "Pull succeeded ✅"
 
             echo "Available images:"
             sudo docker images
