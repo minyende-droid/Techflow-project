@@ -56,32 +56,25 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_KEY }}
           script: |
-          - name: SSH and deploy
-            uses: appleboy/ssh-action@v1.0.0
-            with:
-              host: ${{ secrets.EC2_HOST }}
-              username: ubuntu
-              key: ${{ secrets.EC2_KEY }}
-              script: |
-                echo "Running on EC2..."
-                whoami
-                pwd
+            echo "Running on EC2..."
+            whoami
+            pwd
 
-                echo "Logging into Docker..."
-                docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+            echo "Logging into Docker..."
+            docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
 
-                echo "Pulling image..."
-                docker pull minyende/flask-app:latest
+            echo "Pulling image..."
+            docker pull minyende/flask-app:latest
 
-                echo "Available images:"
-                docker images
+            echo "Available images:"
+            docker images
 
-                echo "Stopping old container..."
-                docker stop flask-app || true
-                docker rm flask-app || true
+            echo "Stopping old container..."
+            docker stop flask-app || true
+            docker rm flask-app || true
 
-                echo "Running container..."
-                docker run -d -p 80:5000 --name flask-app minyende/flask-app:latest
+            echo "Running container..."
+            docker run -d -p 80:5000 --name flask-app minyende/flask-app:latest
 
       - name: Send email
         if: success()
