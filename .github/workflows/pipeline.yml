@@ -56,24 +56,23 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_KEY }}
           script: |
-            set -e   # 👈 VERY IMPORTANT (stop on error)
+            set -e
 
-            echo "Running on EC2..."
+            echo "=== START DEPLOY ==="
+
+            echo "User:"
             whoami
-            pwd
 
-            echo "Docker version:"
-            sudo docker --version
+            echo "Directory:"
+            pwd
 
             echo "Logging into Docker..."
             sudo docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
 
             echo "Pulling image..."
-            sudo docker pull minyende/flask-app:latest
+            sudo docker pull minyende/flask-app:latest || { echo "PULL FAILED"; exit 1; }
 
-            echo "Pull succeeded ✅"
-
-            echo "Available images:"
+            echo "Listing images..."
             sudo docker images
 
             echo "Stopping old container..."
@@ -82,6 +81,8 @@ jobs:
 
             echo "Running container..."
             sudo docker run -d -p 80:5000 --name flask-app minyende/flask-app:latest
+
+            echo "=== DEPLOY COMPLETE ==="
 
       - name: Send email
         if: success()
