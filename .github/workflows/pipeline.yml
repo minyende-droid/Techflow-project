@@ -56,22 +56,32 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_KEY }}
           script: |
-            cd Techflow-project
-            git pull
+          - name: SSH and deploy
+            uses: appleboy/ssh-action@v1.0.0
+            with:
+              host: ${{ secrets.EC2_HOST }}
+              username: ubuntu
+              key: ${{ secrets.EC2_KEY }}
+              script: |
+                echo "Running on EC2..."
+                whoami
+                pwd
 
-            docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+                echo "Logging into Docker..."
+                docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
 
-            docker pull minyende/flask-app:latest
+                echo "Pulling image..."
+                docker pull minyende/flask-app:latest
 
-            docker stop flask-app || true
-            docker rm flask-app || true
+                echo "Available images:"
+                docker images
 
-            docker run -d -p 80:5000 --name flask-app ${{ secrets.DOCKER_USERNAME }}/flask-app:latest
+                echo "Stopping old container..."
+                docker stop flask-app || true
+                docker rm flask-app || true
 
-            chmod +x scripts/health_check.sh
-            chmod +x scripts/rollback.sh
-
-            ./scripts/health_check.sh || ./scripts/rollback.sh
+                echo "Running container..."
+                docker run -d -p 80:5000 --name flask-app minyende/flask-app:latest
 
       - name: Send email
         if: success()
