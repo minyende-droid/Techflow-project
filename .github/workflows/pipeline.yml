@@ -56,11 +56,19 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_KEY }}
           script: |
+            cd Techflow-project
+            git pull
+
             docker pull ${{ secrets.DOCKER_USERNAME }}/flask-app:latest
             docker stop flask-app || true
             docker rm flask-app || true
             docker run -d -p 80:5000 --name flask-app ${{ secrets.DOCKER_USERNAME }}/flask-app:latest
 
+            chmod +x scripts/health_check.sh
+            chmod +x scripts/rollback.sh
+
+            ./scripts/health_check.sh || ./scripts/rollback.sh
+            
       - name: Send email
         if: success()
         run: echo "Deployment successful!"
@@ -90,3 +98,9 @@ jobs:
           body: "Your deployment failed. Check GitHub Actions logs."
           to: ${{ secrets.EMAIL_TO }}
           from: GitHub Actions
+
+      - name: Tag previous stable
+        run: docker tag ${{ secrets.DOCKER_USERNAME }}/flask-app:latest ${{ secrets.DOCKER_USERNAME }}/flask-app:previous_stable
+
+      - name: Push previous stable
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/flask-app:previous_stable
