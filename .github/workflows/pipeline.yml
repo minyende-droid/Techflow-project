@@ -62,28 +62,16 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_KEY }}
           script: |
-            script: |
-              set -e
+            cd your-repo-name
+            git pull
 
-              echo "=== DEPLOY START ==="
+            docker pull ${{ secrets.DOCKER_USERNAME }}/flask-app:latest
+            docker stop flask-app || true
+            docker rm flask-app || true
+            docker run -d -p 80:5000 --name flask-app ${{ secrets.DOCKER_USERNAME }}/flask-app:latest
 
-              echo "Logging into Docker..."
-              echo "${{ secrets.DOCKER_PASSWORD }}" | sudo docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-
-              echo "Pulling image..."
-              sudo docker pull minyende/flask-app:latest
-
-              echo "Images after pull:"
-              sudo docker images
-
-              echo "Stopping old container..."
-              sudo docker stop flask-app || true
-              sudo docker rm flask-app || true
-
-              echo "Running container..."
-              sudo docker run -d -p 80:5000 --name flask-app minyende/flask-app:latest
-
-              echo "=== DEPLOY SUCCESS ==="
+            chmod +x scripts/health_check.sh
+            ./scripts/health_check.sh || ./scripts/rollback.sh
 
       - name: Send email
         if: success()
