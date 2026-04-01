@@ -62,7 +62,7 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_KEY }}
           script: |
-            cd your-repo-name
+            cd Techflow-project
             git pull
 
             docker pull ${{ secrets.DOCKER_USERNAME }}/flask-app:latest
