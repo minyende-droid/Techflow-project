@@ -64,7 +64,7 @@ jobs:
           script: |
             set -e
 
-            cd flask-app
+            cd Techflow-project
             git pull
 
             chmod +x scripts/tag_previous_stable.sh
